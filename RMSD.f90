@@ -64,7 +64,7 @@ contains
       noatoms = SIZE(GEOM, DIM=1)
       CENTROID = SUM(GEOM, DIM=1)/noatoms
 
-      do i = 1, noatoms
+      do concurrent (i = 1:noatoms)
          GEOM(i, :) = GEOM(i, :) - CENTROID(:)
       end do
    end subroutine
@@ -182,7 +182,7 @@ contains
 
       ROTMAT = matmul(TRANSPOSE(VT), matmul(dmat, TRANSPOSE(U)))
 
-      do i = 1, SIZE(GEOM1, DIM=1)
+      do concurrent (i = 1:SIZE(GEOM1, DIM=1))
          GEOM1(i, :) = matmul(ROTMAT, GEOM1(i, :))
       end do
 
