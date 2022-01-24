@@ -1,4 +1,4 @@
-### RMSD
+# RMSD
 
 Simple program to calculate RMSD between two .xyz files.
 
