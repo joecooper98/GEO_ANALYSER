@@ -32,8 +32,6 @@ program RMSD
    CALL GET_COMMAND_ARGUMENT(2, file2) ! reference geometry
    
    !Read .xyz files using submodule, save atoms
-   call allocate_array(GEOM1, file1, f1, atoms)
-   call allocate_array(GEOM2, file2, f2, atoms2)
    if (HBOOL) then
       CALL read_xyz_no_h(GEOM2, file2, f2, atoms2,io2)
    else
@@ -61,8 +59,8 @@ program RMSD
    CALL calc_rmsd(GEOM1, GEOM2, val)
    !print val
    print '(ES12.5)', val
-!   DEALLOCATE(GEOM1)
-!   DEALLOCATE(atoms)
+   DEALLOCATE(GEOM1)
+   DEALLOCATE(atoms)
    end do
 contains
 
@@ -96,23 +94,7 @@ contains
 
    end subroutine
 
-   subroutine allocate_array(GEOM,filename ,fid, atoms)
-           implicit none
-      DOUBLE PRECISION, dimension(:, :), ALLOCATABLE :: GEOM
-      CHARACTER(len=50):: filename
-      CHARACTER(LEN=2), DIMENSION(:), ALLOCATABLE :: atoms
-      integer :: noatoms, fid, io
-      OPEN (fid, file=TRIM(filename))
-      READ (fid, *,IOSTAT=io) noatoms 
-      if (io .LT. 0) then
-              return
-      end if 
-      READ (fid, *)
 
-      allocate (GEOM(noatoms, 3))
-      allocate (atoms(noatoms))
-
-      end subroutine
 
    subroutine read_xyz(GEOM, filename, fid, atoms, io)
       implicit none
@@ -122,7 +104,7 @@ contains
       CHARACTER(LEN=2), DIMENSION(:), ALLOCATABLE :: atoms
       integer :: noatoms, i, fid, io
 
-      !OPEN (fid, file=TRIM(filename))
+      OPEN (fid, file=TRIM(filename))
       READ (fid, *,IOSTAT=io) noatoms 
       !This catches the end of a file to stop the calculation
       if (io .LT. 0) then
@@ -130,8 +112,8 @@ contains
       end if 
       READ (fid, *)
 
-!      allocate (GEOM(noatoms, 3))
-!      allocate (atoms(noatoms))
+      allocate (GEOM(noatoms, 3))
+      allocate (atoms(noatoms))
 
       DO i = 1, noatoms
          READ (fid, *,IOSTAT=io) atoms(i), GEOM(i, :)
