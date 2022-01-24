@@ -34,3 +34,4 @@ to
    LOGICAL :: HBOOL = .true. ! HBOOL is true if you want to remove Hydrogens
 ```
 and recompile (e.g. to `RMSD_NO_H.o`)
+
