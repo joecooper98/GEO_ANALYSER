@@ -18,7 +18,7 @@ program RMSD
    DOUBLE PRECISION, dimension(:, :), ALLOCATABLE :: GEOM1, GEOM2
    DOUBLE PRECISION :: val
    CHARACTER(LEN=50) :: file1, file2
-   integer :: f1 = 1, f2 = 2
+   integer :: f1 = 1, f2 = 2, io1, io2
    CHARACTER(LEN=2), dimension(:), ALLOCATABLE :: atoms, atoms2
    LOGICAL :: HBOOL = .false. ! HBOOL is true if you want to remove Hydrogens
 
@@ -28,17 +28,25 @@ program RMSD
    END IF
 
    !Get command line arguments for filename
-   CALL GET_COMMAND_ARGUMENT(1, file1)
-   CALL GET_COMMAND_ARGUMENT(2, file2)
-
+   CALL GET_COMMAND_ARGUMENT(1, file1) ! file to be checked
+   CALL GET_COMMAND_ARGUMENT(2, file2) ! reference geometry
+   
    !Read .xyz files using submodule, save atoms
    if (HBOOL) then
-      CALL read_xyz_no_h(GEOM1, file1, f1, atoms)
-      CALL read_xyz_no_h(GEOM2, file2, f2, atoms2)
+      CALL read_xyz_no_h(GEOM2, file2, f2, atoms2,io2)
    else
-      CALL read_xyz(GEOM1, file1, f1, atoms)
-      CALL read_xyz(GEOM2, file2, f2, atoms2)
+      CALL read_xyz(GEOM2, file2, f2, atoms2,io2)
    end if
+
+   do 
+   if (HBOOL) then
+      CALL read_xyz_no_h(GEOM1, file1, f1, atoms, io1)
+   else
+      CALL read_xyz(GEOM1, file1, f1, atoms, io1)
+   end if
+   if (io1 .LT. 0) then
+           exit
+   end if 
 
    ! Translate centroid to origin of coordinates
    CALL center(GEOM1)
@@ -51,7 +59,9 @@ program RMSD
    CALL calc_rmsd(GEOM1, GEOM2, val)
    !print val
    print '(ES12.5)', val
-
+   DEALLOCATE(GEOM1)
+   DEALLOCATE(atoms)
+   end do
 contains
 
    subroutine center(geom)
@@ -84,37 +94,45 @@ contains
 
    end subroutine
 
-   subroutine read_xyz(GEOM, filename, fid, atoms)
+   subroutine read_xyz(GEOM, filename, fid, atoms, io)
       implicit none
 
       DOUBLE PRECISION, dimension(:, :), ALLOCATABLE :: GEOM
       CHARACTER(len=50):: filename
       CHARACTER(LEN=2), DIMENSION(:), ALLOCATABLE :: atoms
-      integer :: noatoms, i, fid
+      integer :: noatoms, i, fid, io
 
       OPEN (fid, file=TRIM(filename))
-      READ (fid, *) noatoms
+      READ (fid, *,IOSTAT=io) noatoms 
+      !This catches the end of a file to stop the calculation
+      if (io .LT. 0) then
+              return
+      end if 
       READ (fid, *)
 
       allocate (GEOM(noatoms, 3))
       allocate (atoms(noatoms))
 
       DO i = 1, noatoms
-         READ (fid, *) atoms(i), GEOM(i, :)
+         READ (fid, *,IOSTAT=io) atoms(i), GEOM(i, :)
       end do
 
    end subroutine
 
-   subroutine read_xyz_no_h(GEOM, filename, fid, atoms)
+   subroutine read_xyz_no_h(GEOM, filename, fid, atoms, io)
       implicit none
 
       DOUBLE PRECISION, dimension(:, :), ALLOCATABLE :: intgeom, GEOM
       CHARACTER(len=50):: filename
       CHARACTER(LEN=2), DIMENSION(:), ALLOCATABLE :: atoms
-      integer :: noatoms, no_non_h, i, fid, counter
+      integer :: noatoms, no_non_h, i, fid, counter, io
 
       OPEN (fid, file=TRIM(filename))
-      READ (fid, *) noatoms
+      READ (fid, *,IOSTAT=io) noatoms
+      !This catches the end of a file to stop the calculation
+      if (io .LT. 0) then
+              return
+      end if 
       READ (fid, *)
 
       allocate (intgeom(noatoms, 3))
@@ -122,7 +140,7 @@ contains
 
       no_non_h = 0
       DO i = 1, noatoms
-         READ (fid, *) atoms(i), intgeom(i, :)
+         READ (fid, *, IOSTAT=io) atoms(i), intgeom(i, :)
          if (.not. ((trim(atoms(i)) .EQ. 'H') .OR. (trim(atoms(i)) .EQ. 'h '))) then
             no_non_h = no_non_h + 1
          end if
