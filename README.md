@@ -2,8 +2,6 @@
 
 Simple program to calculate RMSD between two .xyz files.
 
-Written in FORTRAN 90 for speed.
-
 I've only included a fairly minimal feature set so far, this can
 
 - Read .xyz files
