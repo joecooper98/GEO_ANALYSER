@@ -32,3 +32,13 @@ to
    LOGICAL :: HBOOL = .true. ! HBOOL is true if you want to remove Hydrogens
 ```
 and recompile (e.g. to `RMSD_NO_H.o`)
+
+
+## Optimised LAPACK
+
+For better speed, it is recommended you utilise optmised LAPACK libraries. I recommend MKL, which is from INTEL. Utilise their documentation to work out exactly how to compile, but for me it is something like
+
+```
+ifort RMSD.f90 -fast -O3 -g ${MKLROOT}/lib/intel64/libmkl_scalapack_ilp64.a -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_ilp64.a ${MKLROOT}/lib/intel64/libmkl_intel_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a ${MKLROOT}/lib/intel64/libmkl_blacs_intelmpi_ilp64.a -Wl,--end-group -liomp5 -lpthread -lm -ldl  -i8  -I"${MKLROOT}/include" -o RMSD.o 
+```
+but this depends on your system architecture.
