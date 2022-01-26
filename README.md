@@ -21,7 +21,7 @@ And run it like
 ```
 If you want to be able to run it anywhere, just place it in your path, and forego the `./`.
 
-This will print the minimised RMSD for `comp_geom.xyz` compared to `ref_geom.xyz`. The geometry `comp_geom.xyz`, can be a multi-geometry .xyz file (i.e. concatenated .xyz files), and the reference geometry will only read the first file.
+This will print the minimised RMSD for `comp_geom.xyz` compared to `ref_geom.xyz`. The geometry `comp_geom.xyz`, can be a multi-geometry .xyz file (i.e. concatenated .xyz files), and the reference geometry will only read the first file. It will then print the minimised RMSD value *for each* geometry in that file, in the same order as they are in the file.
 
 If you want to only calculate the heavy atoms (i.e. no Hydrogens), then simply change the line
 ```
