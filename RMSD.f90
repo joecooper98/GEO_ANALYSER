@@ -213,7 +213,7 @@ contains
       DOUBLE PRECISION, dimension(3, 3) :: MAT
 
       dettt = MAT(1, 1)*(MAT(2, 2)*MAT(3, 3) - MAT(2, 3)*MAT(3, 2))
-      dettt = dettt + -MAT(1, 2)*(MAT(2, 1)*MAT(3, 3) - MAT(2, 3)*MAT(3, 1))
+      dettt = dettt - MAT(1, 2)*(MAT(2, 1)*MAT(3, 3) - MAT(2, 3)*MAT(3, 1))
       dettt = dettt + MAT(1, 3)*(MAT(2, 1)*MAT(3, 2) - MAT(2, 1)*MAT(3, 2))
    end function
 end program
