@@ -59,9 +59,9 @@ program RMSD
    CALL calc_rmsd(GEOM1, GEOM2, val)
    !print val
    print '(ES12.5)', val
+   end do
    DEALLOCATE(GEOM1)
    DEALLOCATE(atoms)
-   end do
 contains
 
    subroutine center(geom)
@@ -103,8 +103,12 @@ contains
       CHARACTER(len=50):: filename
       CHARACTER(LEN=2), DIMENSION(:), ALLOCATABLE :: atoms
       integer :: noatoms, i, fid, io
+      logical :: test
 
+      inquire(unit=fid, opened=test)
+      if (.not. test) then
       OPEN (fid, file=TRIM(filename))
+      end if 
       READ (fid, *,IOSTAT=io) noatoms 
       !This catches the end of a file to stop the calculation
       if (io .LT. 0) then
@@ -112,8 +116,10 @@ contains
       end if 
       READ (fid, *)
 
+      if (.not. allocated(GEOM)) then 
       allocate (GEOM(noatoms, 3))
       allocate (atoms(noatoms))
+      end if 
 
       DO i = 1, noatoms
          READ (fid, *,IOSTAT=io) atoms(i), GEOM(i, :)
@@ -128,17 +134,24 @@ contains
       CHARACTER(len=50):: filename
       CHARACTER(LEN=2), DIMENSION(:), ALLOCATABLE :: atoms
       integer :: noatoms, no_non_h, i, fid, counter, io
+      logical :: test
 
+      inquire(unit=fid, opened=test)
+      if (.not. test) then
       OPEN (fid, file=TRIM(filename))
+      end if 
       READ (fid, *,IOSTAT=io) noatoms
       !This catches the end of a file to stop the calculation
+      if (.not. allocated(intgeom)) then
+              allocate (intgeom(noatoms, 3))
+      allocate (atoms(noatoms))
+      end if 
       if (io .LT. 0) then
+              deallocate(intgeom)
               return
       end if 
       READ (fid, *)
 
-      allocate (intgeom(noatoms, 3))
-      allocate (atoms(noatoms))
 
       no_non_h = 0
       DO i = 1, noatoms
@@ -148,7 +161,9 @@ contains
          end if
       end do
 
+      if (.not. allocated(GEOM)) then
       allocate (GEOM(no_non_h, 3))
+      end if
       counter = 0
       do i = 1, noatoms
          if (.not. ((trim(atoms(i)) .EQ. 'H ') .OR. (trim(atoms(i)) .EQ. 'h '))) then
