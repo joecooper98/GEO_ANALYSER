@@ -62,7 +62,7 @@ program geo_analyser
   do i = 1,no_operations
   call decider(trim(str(i)), GEOM1, GEOM2, val(i),atoms)
   end do
-  call printer(time,val, no_operations)
+  call printer(val, no_operations)
   end do
   if (allocated(GEOM2)) then
           deallocate(GEOM2)
@@ -80,11 +80,11 @@ program geo_analyser
   end if
 contains
 
-subroutine printer(t,x,n)
-                double precision, intent(in) :: x(:),t
+subroutine printer(x,n)
+                double precision, intent(in) :: x(:)
                 integer,intent(in) :: n
 
-                write(*,'(ES16.8,2x)',advance='no') t
+                ! write(*,'(ES16.8,2x)',advance='no') t
                 do i = 1,n
                 if (i .eq. n) then
                         write(*,'(ES16.8)') x(i)
@@ -242,7 +242,7 @@ subroutine printer(t,x,n)
     double precision, intent(IN) :: GEOM(:,:)
     integer, dimension(2), intent(IN) :: indices
 
-    DIST = sqrt(sum(GEOM(indices(1),:)**2+GEOM(indices(2),:)**2))
+    DIST = norm(GEOM(indices(1),:)-GEOM(indices(2),:))
   end function
 
   double precision function ANG(GEOM, indices)
@@ -359,7 +359,7 @@ subroutine printer(t,x,n)
     implicit none
 
     DOUBLE PRECISION,  ALLOCATABLE, intent(OUT) :: GEOM(:,:)
-    double precision, intent(out) :: time
+    double precision :: time
     CHARACTER(len=50):: intstring1, intstring2
     CHARACTER(len=50),intent(IN):: filename
     CHARACTER(LEN=2), DIMENSION(:), ALLOCATABLE , intent(OUT):: atoms
@@ -371,7 +371,8 @@ subroutine printer(t,x,n)
     if (io .LT. 0) then
       return
     end if 
-    READ (fid,*) intstring1, time
+    ! READ (fid,*) intstring1, time
+    read(fid,*)
 
     if (.not. allocated(GEOM)) then
     allocate (GEOM(noatoms, 3))
