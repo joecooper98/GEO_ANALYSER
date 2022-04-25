@@ -1,4 +1,4 @@
-# RMSD
+# GEO_ANALYSER
 
 Simple program to calculate geometric quantities across trajectories.
 
@@ -47,6 +47,8 @@ This will (in order) compute the
 4. The dihedral angle between atoms 1, 2, 11 and 12 in the `comp_geom.xyz` file 
 5. The RMSD between `comp_geom.xyz` and `ref_geom.xyz`
 6. The RMSD between `comp_geom.xyz` and `ref_geom.xyz`, ignoring the contributions from atoms labelled `H`
+
+If you want to add your own, then it's fairly simple. Give it a 4 letter name, create a subroutine/function that returns a single value, and then add it to the switch statement in the `decider` routine. 
 
 ## Trajectories
 
