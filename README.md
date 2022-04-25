@@ -48,6 +48,8 @@ This will (in order) compute the
 5. The RMSD between `comp_geom.xyz` and `ref_geom.xyz`
 6. The RMSD between `comp_geom.xyz` and `ref_geom.xyz`, ignoring the contributions from atoms labelled `H`
 
+It will then write them in a space separated variable format, with time as the first column, and then the calculated values as the other columns in the same order as placed on the input.
+
 If you want to add your own, then it's fairly simple. Give it a 4 letter name, create a subroutine/function that returns a single value, and then add it to the switch statement in the `decider` routine. 
 
 ## Trajectories
